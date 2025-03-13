@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
 	finnhub "github.com/Finnhub-Stock-API/finnhub-go/v2"
 )
@@ -44,5 +45,35 @@ func (s *FinnhubClient) GetStockQuote(symbol string) (*StockQuote, error) {
 		TodaysLow:     *quote.L,
 		TodaysOpen:    *quote.O,
 		PreviousClose: *quote.Pc,
+	}, nil
+}
+
+func (client *FinnhubClient) GetLatestVolume(symbol string) (StockCandles, error) {
+	now := time.Now().Unix()
+	from := now - 10*60 // 10 minutes ago
+	resolution := "1"   // 1-minute candles
+
+	candles, response, err := client.client.StockCandles(context.Background()).
+		Symbol(symbol).
+		Resolution(resolution).
+		From(from).
+		To(now).
+		Execute()
+	if err != nil {
+		return StockCandles{}, fmt.Errorf("error fetching candles: %v, response: %v", err, response)
+	}
+
+	if candles.S == nil || *candles.S != "ok" || len(*candles.V) == 0 {
+		return StockCandles{}, fmt.Errorf("no volume data available for %s", symbol)
+	}
+
+	return StockCandles{
+		ClosePrices: *candles.C,
+		HighPrices:  *candles.H,
+		LowPrices:   *candles.L,
+		OpenPrices:  *candles.O,
+		Volume:      *candles.V,
+		Timestamps:  *candles.T,
+		Status:      *candles.S,
 	}, nil
 }
