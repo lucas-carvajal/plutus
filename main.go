@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -8,6 +9,25 @@ import (
 )
 
 func main() {
+	stockService := NewFinnhubClient(FINNHUB_API_KEY)
+
+	// === Example: Get just the current price
+	symbol := "AAPL"
+	price, err := stockService.GetStockPrice(symbol)
+	if err != nil {
+		log.Fatalf("Failed to get stock price: %v", err)
+	}
+	fmt.Printf("Current price for %s: %.2f\n", symbol, price)
+
+	// Example: Get the full quote
+	quote, err := stockService.GetStockQuote(symbol)
+	if err != nil {
+		log.Fatalf("Failed to get stock quote: %v", err)
+	}
+	fmt.Printf("Quote for %s: Current: %.2f, High: %.2f, Low: %.2f, Open: %.2f, Previous Close: %.2f\n",
+		symbol, quote.CurrentPrice, quote.TodaysHigh, quote.TodaysLow, quote.TodaysOpen, quote.PreviousClose)
+	// ===
+
 	// Create a new Gin router
 	r := gin.Default()
 

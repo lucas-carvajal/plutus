@@ -3,8 +3,8 @@ Tracking prices and volume for stocks and determining critical points, serving a
 
 
 ## TODOs
-- [ ] Add DB to store the data & set up repo and schema
 - [ ] Use Finnhub API to get data (Price, Volume & moving average)
+- [ ] Add DB to store the data & set up repo and schema
 - [ ] Store the data from Finnhub in the DB
 - [ ] Define TODOs for the calculations
 
