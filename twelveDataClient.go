@@ -5,38 +5,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"plutus/domain"
 	"time"
 )
 
-type TwelveDataClient struct {
+// CONTINUE HERE: https://grok.com/chat/6514b4c4-6882-487b-88e4-9b7ff8692ed8
+
+type TwelvedataClient struct {
 	apiKey string
 	client *http.Client
 }
 
-func NewTwelveDataClient(apiKey string) *TwelveDataClient {
-	return &TwelveDataClient{
+func NewTwelvedataClient(apiKey string) *TwelvedataClient {
+	return &TwelvedataClient{
 		apiKey: apiKey,
 		client: &http.Client{Timeout: 10 * time.Second},
 	}
 }
 
-type TimeSeriesResponse struct {
-	Meta struct {
-		Symbol   string `json:"symbol"`
-		Interval string `json:"interval"`
-	} `json:"meta"`
-	Values []struct {
-		Datetime string `json:"datetime"`
-		Open     string `json:"open"`
-		High     string `json:"high"`
-		Low      string `json:"low"`
-		Close    string `json:"close"`
-		Volume   string `json:"volume"`
-	} `json:"values"`
-	Status string `json:"status"`
-}
-
-func (c *TwelveDataClient) GetLatestPriceAndVolume(symbol string, interval string) (float64, int64, time.Time, error) {
+func (c *TwelvedataClient) GetLatestPriceAndVolume(symbol string, interval string) (float64, int64, time.Time, error) {
 	url := fmt.Sprintf(
 		"https://api.twelvedata.com/time_series?symbol=%s&interval=%s&outputsize=1&apikey=%s",
 		symbol, interval, c.apiKey,
@@ -81,6 +68,46 @@ func (c *TwelveDataClient) GetLatestPriceAndVolume(symbol string, interval strin
 	}
 
 	return closePrice, volume, timestamp, nil
+}
+
+func (c *TwelvedataClient) GetLatestQuote(symbol string) (domain.Quote, error) {
+	url := fmt.Sprintf(
+		"https://api.twelvedata.com/quote?symbol=%s&apikey=%s",
+		symbol, c.apiKey,
+	)
+
+	req, err := http.NewRequestWithContext(context.Background(), "GET", url, nil)
+	if err != nil {
+		return domain.Quote{}, fmt.Errorf("request error: %v", err)
+	}
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return domain.Quote{}, fmt.Errorf("fetch error: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body := make([]byte, 1024)
+		resp.Body.Read(body)
+		return domain.Quote{}, fmt.Errorf("status: %s, body: %s", resp.Status, string(body))
+	}
+
+	var quoteResponse QuoteResponse
+	if err := json.NewDecoder(resp.Body).Decode(&quoteResponse); err != nil {
+		return domain.Quote{}, fmt.Errorf("decode error: %v", err)
+	}
+
+	if quoteResponse.Symbol == "" {
+		return domain.Quote{}, fmt.Errorf("no valid data returned: %+v", quoteResponse)
+	}
+
+	quote, err := quoteResponse.ToQuote()
+	if err != nil {
+		return domain.Quote{}, fmt.Errorf("conversion error: %v", err)
+	}
+
+	return quote, nil
 }
 
 func parseFloat(s string) (float64, error) {
