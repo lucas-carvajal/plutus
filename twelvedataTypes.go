@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"plutus/domain"
 	"strconv"
+	"time"
 )
 
 type QuoteResponse struct {
@@ -76,13 +77,15 @@ func (qr *QuoteResponse) ToQuote() (domain.Quote, error) {
 		return domain.Quote{}, fmt.Errorf("fifty_two_week.low parse error: %v", err)
 	}
 
+	datetime := time.Unix(qr.Timestamp, 0)
+
 	return domain.Quote{
 		Symbol:        qr.Symbol,
 		Name:          qr.Name,
 		Exchange:      qr.Exchange,
 		MicCode:       qr.MicCode,
 		Currency:      qr.Currency,
-		Datetime:      qr.Datetime,
+		Datetime:      datetime,
 		Timestamp:     qr.Timestamp,
 		Open:          open,
 		High:          high,
