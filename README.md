@@ -3,10 +3,13 @@ Tracking prices and volume for stocks and determining critical points, serving a
 
 
 ## TODOs
-- [ ] Use Finnhub API to get data (Price, Volume & moving average)
-- [ ] Add DB to store the data & set up repo and schema
-- [ ] Store the data from Finnhub in the DB
+- [X] Use TwelveData API to get data (Price, Volume & moving average)
+- [ ] Store the data from TwelveData in the DB
 - [ ] Define TODOs for the calculations
+- [ ] Define further data to calc EOD and store in other tables
+- [ ] Integrate with Telegram
+- [ ] Conditions for notification sending
+- [ ] Add tests
 
 
 
