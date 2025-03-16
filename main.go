@@ -5,10 +5,25 @@ import (
 	"log"
 	"time"
 
+	"plutus/repository"
+
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	// PostgreSQL connection string
+	// TODO provide real one
+	connStr := "postgres://postgres:yourpassword@localhost:5432/quotes_db?sslmode=disable"
+
+	// Initialize repository
+	repo, err := repository.NewQuoteRepository(connStr)
+	if err != nil {
+		fmt.Printf("Repository init error: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Repository: %v\n", repo)
+
 	twelveData := NewTwelvedataClient(TWELVE_DATA_API_KEY)
 
 	// price, volume, timestamp, err := twelveData.GetLatestPriceAndVolume("MSTR", "5min")
