@@ -47,3 +47,32 @@ Tracking prices and volume for stocks and determining critical points, serving a
 - Trend context
     - In bull market, upward breakouts are the path of least resistance
     - In bear market, breakdowns are the path of least resistance
+
+# Technical Set Up
+
+### Run local DB with docker
+Create postgres container with volume
+```
+docker run --name postgres-db \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=yourpassword \
+  -e POSTGRES_DB=quotes_db \
+  -p 5432:5432 \
+  -v pgdata:/var/lib/postgresql/data \
+  -d postgres:latest
+```
+
+Connect to the DB
+```
+psql -h localhost -U postgres -d quotes_db
+```
+
+Connection string for local DB
+```
+postgres://postgres:yourpassword@localhost:5432/quotes_db?sslmode=disable
+```
+
+### Run the server
+```
+go run main.go
+```
