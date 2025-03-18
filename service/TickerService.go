@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"log"
+	"plutus/service/marketHours"
 	"time"
 )
 
@@ -23,7 +24,7 @@ func (s *TickerService) Start() {
 
 		fmt.Println("currentMinute", currentMinute)
 
-		if currentMinute%10 == 0 {
+		if currentMinute%10 == 0 && marketHours.IsActiveNow(marketHours.NASDAQ) {
 			log.Println("Running scheduled data ingestion")
 			err := s.dataIngestionService.IngestNewData("MSTR")
 			if err != nil {
