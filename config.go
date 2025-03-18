@@ -10,8 +10,9 @@ import (
 var (
 	APP_ENV = getEnvWithDefault("APP_ENV", "local")
 
-	FINNHUB_API_KEY     = getEnvOrPanic("FINNHUB_API_KEY")
-	TWELVE_DATA_API_KEY = getEnvOrPanic("TWELVE_DATA_API_KEY")
+	FINNHUB_API_KEY            = getEnvOrPanic("FINNHUB_API_KEY")
+	TWELVE_DATA_API_KEY        = getEnvOrPanic("TWELVE_DATA_API_KEY")
+	POSTGRES_CONNECTION_STRING = getEnvOrPanic("POSTGRES_CONNECTION_STRING")
 )
 
 func getEnvWithDefault(key, defaultValue string) string {
