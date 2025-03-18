@@ -1,4 +1,4 @@
-package main
+package clients
 
 // type Quote struct {
 // 	C   *float32 `json:"c,omitempty"` 	-> Current price: 100.00

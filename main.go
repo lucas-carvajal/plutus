@@ -5,7 +5,9 @@ import (
 	"log"
 	"time"
 
+	"plutus/clients"
 	"plutus/repository"
+	"plutus/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,7 +26,9 @@ func main() {
 
 	fmt.Printf("Repository: %v\n", repo)
 
-	twelveData := NewTwelvedataClient(TWELVE_DATA_API_KEY)
+	twelveData := clients.NewTwelvedataClient(TWELVE_DATA_API_KEY)
+
+	dataIngestionService := service.NewDataIngestionService(repo, twelveData)
 
 	// price, volume, timestamp, err := twelveData.GetLatestPriceAndVolume("MSTR", "5min")
 	// if err != nil {
@@ -39,19 +43,27 @@ func main() {
 	}
 	fmt.Println(latestQuote.OutputFormatted())
 
-	// Start the logging goroutine
-	go startLogging()
+	go startLogging(dataIngestionService)
 
 	setUpApi()
 }
 
-// startLogging runs a ticker that logs "hello" every 10 minutes
-func startLogging() {
-	ticker := time.NewTicker(10 * time.Minute)
+func startLogging(dataIngestionService *service.DataIngestionService) {
+	ticker := time.NewTicker(1 * time.Minute)
 	defer ticker.Stop()
 
 	for range ticker.C {
-		log.Println("hello")
+		currentMinute := time.Now().Minute()
+
+		if currentMinute%10 == 0 {
+			log.Println("Running scheduled data ingestion")
+			err := dataIngestionService.IngestNewData("MSTR")
+			if err != nil {
+				log.Printf("Data ingestion failed: %v", err)
+			}
+		} else {
+			log.Printf("Skipping data ingestion - current minute (%d) is not divisible by 10", currentMinute)
+		}
 	}
 }
 
