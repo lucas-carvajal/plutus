@@ -37,7 +37,7 @@ func (r *QuoteRepository) SaveOrUpdate(quote domain.Quote) (uint, error) {
 	return entity.ID, nil
 }
 
-func (r *QuoteRepository) Read(symbol string, datetime time.Time) (Quote, error) {
+func (r *QuoteRepository) Read(symbol string, datetime time.Time) (domain.Quote, error) {
 	var entity QuoteEntity
 	result := r.db.Where("symbol = ? AND datetime = ?", symbol, datetime).First(&entity)
 	if result.Error != nil {
