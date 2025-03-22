@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	APP_ENV = getEnvWithDefault("APP_ENV", "local")
+	APP_ENV = getEnvWithDefault("APP_ENV", "local") // local or prod
 
 	FINNHUB_API_KEY            = getEnvOrPanic("FINNHUB_API_KEY")
 	TWELVE_DATA_API_KEY        = getEnvOrPanic("TWELVE_DATA_API_KEY")

@@ -24,6 +24,15 @@ func (s *TickerService) Start() {
 
 		fmt.Println("currentMinute", currentMinute)
 
+		/// ===
+
+		err := s.dataIngestionService.IngestNewData("MSTR")
+		if err != nil {
+			log.Printf("Data ingestion failed: %v", err)
+		}
+
+		/// ===
+
 		if currentMinute%10 == 0 && marketHours.IsActiveNow(marketHours.NASDAQ) {
 			log.Println("Running scheduled data ingestion")
 			err := s.dataIngestionService.IngestNewData("MSTR")

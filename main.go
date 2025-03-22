@@ -26,11 +26,11 @@ func main() {
 
 	go tickerService.Start()
 
-	latestQuote, err := twelveData.GetLatestQuote("MSTR")
-	if err != nil {
-		log.Fatalf("Failed: %v", err)
-	}
-	fmt.Println(latestQuote.OutputFormatted())
+	// latestQuote, err := twelveData.GetLatestQuote("MSTR")
+	// if err != nil {
+	// 	log.Fatalf("Failed: %v", err)
+	// }
+	// fmt.Println(latestQuote.OutputFormatted())
 
 	setUpApi()
 }
